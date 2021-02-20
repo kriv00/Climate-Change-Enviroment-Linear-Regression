@@ -1,0 +1,188 @@
+---
+title: "Football Salary Exploration"
+output: html_notebook
+author: Kelly Rivera
+---
+
+
+
+# probability distribution
+
+Data set: American Football: Analysis on the Salary of 5.5k Pro-Players
+
+## Install & load libraries
+```{r}
+# Install tidyverse
+#install.packages("tidyverse")
+#install.packages("corrplot")
+
+# load libraries
+library(tidyverse)
+library(ggplot2)
+library(corrplot)
+```
+
+## Import Dataset CSV
+```{r}
+# Importing the csv file
+ausWeather <- read_csv("weatherAUS.csv") %>% subset(select = c(Date, MinTemp, MaxTemp, Rainfall, WindGustDir, WindGustSpeed, RainToday,
+                                                               RainTomorrow)) %>% drop_na()
+
+ausWeather
+```
+
+## Can we predict the Max Temputature for a given day based on Min Temperature, Rainfall, and WindGustSpeed?
+```{r}
+# Correlation calculation
+corrMatixdata <- select(ausWeather, "MaxTemp", "MinTemp", "Rainfall", "WindGustSpeed")
+corrMatix <-cor(corrMatixdata)
+corrplot(corrMatix, method = "number")
+```
+
+## Get training and testing sets
+```{r}
+# Set the random seed for repetablility
+set.seed(123)
+
+# Split the data 
+sample <- sample.split(ausWeather$Date, SplitRatio = .75)
+train <- subset(ausWeather, sample == TRUE)
+test <- subset(ausWeather, sample == FALSE)
+
+```
+
+## Build model on Training Set
+Given min temp, predict the max temp
+```{r}
+model1 <- lm(MaxTemp ~ MinTemp, data = train)
+model1
+```
+
+# predict the testing set
+```{r}
+# Predict the psoition with the model and the test data
+predictedMaxTemp1 <- predict(model1, test)
+```
+
+# Actual vs. Predicted
+```{r}
+tempPrediction1 <- data.frame(MinTemp = test$MinTemp,
+                               ActualMaxTemp = test$MaxTemp,
+                               PredictedMaxTemp = predictedMaxTemp1)
+tempPrediction1
+```
+
+## Visualize the predition
+```{r}
+ggplot(data = tempPrediction1, mapping = aes(x = MinTemp)) +
+  geom_point(mapping = aes(y = ActualMaxTemp), color = "blue") +
+  geom_point(mapping = aes(y = PredictedMaxTemp), color = "red") +
+  labs(title = "Predicted Max Temp. Given Min Temp.",
+       subtitle = "Source: Kaggle",
+       caption = "* Predicted Temp. in Red",
+       y = "Max. temperature",
+       x = "Min. temperature")
+```
+
+## RSME
+```{r}
+rmse <- RMSE(tempPrediction1$ActualMaxTemp, tempPrediction1$PredictedMaxTemp)
+cat("Root Squared Mean Error", rmse)
+```
+
+----------------------------------------------------------------------------------------------------------------
+
+
+## Build model on Training Set
+Given Rainfall, predict the max temp
+```{r}
+model2 <- lm(MaxTemp ~ Rainfall, data = train)
+model2
+```
+
+# predict the testing set
+```{r}
+# Predict the psoition with the model and the test data
+predictedMaxTemp2 <- predict(model2, test)
+```
+
+# Actual vs. Predicted
+```{r}
+tempPrediction2 <- data.frame(Rainfall = test$Rainfall,
+                               ActualMaxTemp = test$MaxTemp,
+                               PredictedMaxTemp = predictedMaxTemp2)
+tempPrediction2
+```
+
+
+## Visualize the predition
+```{r}
+ggplot(data = tempPrediction2, mapping = aes(x = Rainfall)) +
+  geom_point(mapping = aes(y = ActualMaxTemp), color = "blue") +
+  geom_point(mapping = aes(y = PredictedMaxTemp), color = "red") +
+  labs(title = "Predicted Max Temp. Given Rainfall",
+       subtitle = "Source: Kaggle",
+       caption = "* Predicted Temp. in Red",
+       y = "Max. temperature",
+       x = "Rainfall")
+```
+
+## RSME
+```{r}
+rmse <- RMSE(tempPrediction2$ActualMaxTemp, tempPrediction2$PredictedMaxTemp)
+cat("Root Squared Mean Error", rmse)
+```
+
+
+-------------------------------------------------------------------------------
+
+
+## Build model on Training Set
+Given WindGustSpeed, predict the max temp
+```{r}
+model3 <- lm(MaxTemp ~ WindGustSpeed, data = train)
+model3
+```
+
+# predict the testing set
+```{r}
+# Predict the position with the model and the test data
+predictedMaxTemp3 <- predict(model3, test)
+```
+
+# Actual vs. Predicted
+```{r}
+tempPrediction3 <- data.frame(WindGustSpeed = test$WindGustSpeed,
+                               ActualMaxTemp = test$MaxTemp,
+                               PredictedMaxTemp = predictedMaxTemp3)
+tempPrediction3
+```
+
+
+## Visualize the predition
+```{r}
+ggplot(data = tempPrediction3, mapping = aes(x = WindGustSpeed)) +
+  geom_point(mapping = aes(y = ActualMaxTemp), color = "blue") +
+  geom_point(mapping = aes(y = PredictedMaxTemp), color = "red") +
+  labs(title = "Predicted Max Temp. Given Wind Gust Speed",
+       subtitle = "Source: Kaggle",
+       caption = "* Predicted Temp. in Red",
+       y = "Max. temperature",
+       x = "Wind Gust Speed")
+```
+
+## RSME
+```{r}
+rmse <- RMSE(tempPrediction3$ActualMaxTemp, tempPrediction3$PredictedMaxTemp)
+cat("Root Squared Mean Error", rmse)
+```
+
+
+
+
+
+
+
+
+
+
