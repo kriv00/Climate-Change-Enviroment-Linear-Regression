@@ -177,6 +177,50 @@ rmse <- RMSE(tempPrediction3$ActualMaxTemp, tempPrediction3$PredictedMaxTemp)
 cat("Root Squared Mean Error", rmse)
 ```
 
+------------------------------------------------------------
+
+
+## Build model on Training Set
+Given WindGustSpeed, predict the WindGustDir
+```{r}
+dmodel1 <- lm(WindGustDir ~ WindGustSpeed, data = train)
+dmodel1
+```
+
+# predict the testing set
+```{r}
+# Predict the position with the model and the test data
+predictedWindGustDir1 <- predict(dmodel1, test)
+```
+
+# Actual vs. Predicted
+```{r}
+tempPrediction1 <- data.frame(WindGustSpeed = test$WindGustSpeed,
+                               ActualWindGustDir = test$WindGustDir,
+                               PredictedWindGustDir = predictedWindGustDir1)
+tempPrediction1
+```
+
+## Visualize the predition
+```{r}
+ggplot(data = tempPrediction1, mapping = aes(x = WindGustSpeed)) +
+  geom_point(mapping = aes(y = ActualWindGustDir), color = "blue") +
+  geom_point(mapping = aes(y = PredictedWindGustDir), color = "red") +
+  labs(title = "Predicted Wind Gust Dir. Given Wind Gust Speed",
+       subtitle = "Source: Kaggle",
+       caption = "* Predicted Wind Dir. in Red
+       * Actual Wind Dir. in  Blue",
+       y = "Wind Gust Dir.",
+       x = "Given Wind Gust Speed")
+```
+
+## RSME
+```{r}
+rmse <- RMSE(tempPrediction1$ActualMaxTemp, tempPrediction1$PredictedMaxTemp)
+cat("Root Squared Mean Error", rmse)
+```
+
+----------------------------------------------------------------------------------------------------------------
 
 
 
